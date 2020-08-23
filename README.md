@@ -71,7 +71,7 @@ Log file:
 [2020-08-16 01:58:25]	[DEBUG]	Running PowerShell version 5 compatible of versions 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.14393.1944
 [2020-08-16 01:58:25]	[DEBUG]	Machine Name: VM-A9B0F407
 [2020-08-16 01:58:25]	[WARNING]	Reversing Machine name (VM-A9B0F407)...
-[2020-08-16 01:58:25]	[INFO]	Reverse Machine name: 704F0B9A-MV
+[2020-08-16 01:58:25]	[INFO]	Reversed Machine name: 704F0B9A-MV
 [2020-08-16 01:58:25]	[INFO]	Script ended
 =======================================
 ```
