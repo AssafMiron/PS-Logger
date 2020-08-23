@@ -43,10 +43,9 @@ Write-LogMessage -Type Debug -MSG "Machine Name: $machineName"
 $revMachineName = $machineName.ToCharArray()
 [array]::Reverse($revMachineName)
 $revMachineName = -Join($revMachineName)
-Write-LogMessage -Type Debug -MSG "Reverse Machine Name: $revMachineName"
 
 Write-LogMessage -Type Warning -MSG "Reversing Machine name ($machineName)..."
-Write-LogMessage -Type Info -MSG "Reverse Machine name: $revMachineName"
+Write-LogMessage -Type Info -MSG "Reversed Machine name: $revMachineName"
 
 Write-LogMessage -Type Info -MSG "Script ended" -Footer
 Remove-Module PS-Logger -Debug:$False -Verbose:$False
@@ -57,8 +56,8 @@ On screen:
 PS C:\Temp> .\temp.ps1 -Debug -Verbose
 =======================================
 Starting script (v1.0)
-Reversing Machine name (AMPM-A9B0F407)...
-Reverse Machine name: 704F0B9A-MPMA
+Reversing Machine name (VM-A9B0F407)...
+Reverse Machine name: 704F0B9A-MV
 Script ended
 =======================================
 ```
@@ -70,10 +69,9 @@ Log file:
 =======================================
 [2020-08-16 01:58:25]	[INFO]	Starting script (v1.0)
 [2020-08-16 01:58:25]	[DEBUG]	Running PowerShell version 5 compatible of versions 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.14393.1944
-[2020-08-16 01:58:25]	[DEBUG]	Machine Name: AMPM-A9B0F407
-[2020-08-16 01:58:25]	[DEBUG]	Reverse Machine Name: 704F0B9A-MPMA
-[2020-08-16 01:58:25]	[WARNING]	Reversing Machine name (AMPM-A9B0F407)...
-[2020-08-16 01:58:25]	[INFO]	Reverse Machine name: 704F0B9A-MPMA
+[2020-08-16 01:58:25]	[DEBUG]	Machine Name: VM-A9B0F407
+[2020-08-16 01:58:25]	[WARNING]	Reversing Machine name (VM-A9B0F407)...
+[2020-08-16 01:58:25]	[INFO]	Reverse Machine name: 704F0B9A-MV
 [2020-08-16 01:58:25]	[INFO]	Script ended
 =======================================
 ```
