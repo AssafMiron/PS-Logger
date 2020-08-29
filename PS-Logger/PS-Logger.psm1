@@ -62,6 +62,7 @@ Function Get-LogFilePath
 }
 Export-ModuleMember -Function Get-LogFilePath
 
+[string]$global:g_DateTimePattern = "$([System.Globalization.CultureInfo]::CurrentCulture.DateTimeFormat.ShortDatePattern) $([System.Globalization.CultureInfo]::CurrentCulture.DateTimeFormat.LongTimePattern)"
 # @FUNCTION@ ======================================================================================================================
 # Name...........: Write-LogMessage
 # Description....: Writes the message to log and screen
@@ -125,7 +126,7 @@ Function Write-LogMessage
 			Write-Host "------------------------------------"
 		}
 		
-		$msgToWrite = "[$(Get-Date -Format "yyyy-MM-dd hh:mm:ss")]`t"
+		$msgToWrite = "[$((Get-Date -Format $g_DateTimePattern).Replace("/","-"))]`t"
 		$writeToFile = $true
 		# Replace empty message with 'N/A'
 		if([string]::IsNullOrEmpty($Msg)) { $Msg = "N/A" }
