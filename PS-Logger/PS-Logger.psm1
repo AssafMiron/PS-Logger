@@ -181,6 +181,64 @@ Function Write-LogMessage
 Export-ModuleMember -Function Write-LogMessage
 
 # @FUNCTION@ ======================================================================================================================
+# Name...........: Write-LocalizedMessage
+# Description....: Writes a localized message to log and screen
+# Parameters.....: LogFile, MSG ID, (Switch)Header, (Switch)SubHeader, (Switch)Footer, Type
+# Return Values..: None
+# =================================================================================================================================
+Function Write-LocalizedMessage
+{
+<# 
+.SYNOPSIS 
+	Method to log a localized message on screen and in a log file
+	
+.DESCRIPTION
+	Logging The input Message ID in the relevant selected localization to the Screen and the Log File. 
+	The Message Type is presented in colours on the screen based on the type
+	This method uses the Write-LogMessage function
+
+.PARAMETER LogFile
+	The Log File to write to. By default using the LOG_FILE_PATH
+.PARAMETER MSGID
+	The localized message ID to log
+.PARAMETER Header
+	Adding a header line before the message
+.PARAMETER SubHeader
+	Adding a Sub header line before the message
+.PARAMETER Footer
+	Adding a footer line after the message
+.PARAMETER Type
+	The type of the message to log (Info, Warning, Error, Debug)
+.EXAMPLE
+	Write-LocalizedMessage -Type Info -MsgID "Hello_World!"
+	>When in English locatization:
+	Hello World!
+	>When in Spanish localization:
+	Hola Mundo!
+	>When in German localization:
+	Hallo Welt!
+#>
+param(
+	[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+	[AllowEmptyString()]
+	[String]$MSGID,
+	[Parameter(Mandatory=$false)]
+	[Switch]$Header,
+	[Parameter(Mandatory=$false)]
+	[Switch]$SubHeader,
+	[Parameter(Mandatory=$false)]
+	[Switch]$Footer,
+	[Parameter(Mandatory=$false)]
+	[ValidateSet("Info","Warning","Error","Debug","Verbose")]
+	[String]$type = "Info",
+	[Parameter(Mandatory=$false)]
+	[String]$LogFile = $LOG_FILE_PATH
+)
+	Write-LogMessage -Type $Type -Header:$Header -SubHeader:$SubHeader -Footer:$Footer -LogFile $LogFile -Msg $(Get-LocalizedMessage -id $MSGID)
+}
+Export-ModuleMember -Function Write-LocalizedMessage
+
+# @FUNCTION@ ======================================================================================================================
 # Name...........: Join-ExceptionMessage
 # Description....: Formats exception messages
 # Parameters.....: Exception
@@ -214,3 +272,83 @@ Function Join-ExceptionMessage
 	}
 }
 Export-ModuleMember -Function Join-ExceptionMessage
+
+#region localization
+$script:m_CultureID = $null
+$script:m_ResouceFile = $null
+$script:m_ResouceFolder = $null
+$script:m_Script_Resources = $null
+
+Function Get-ResourceCulture
+{
+	return m_CultureID
+}
+
+Function Set-ResourceCulture
+{
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory=$false)]
+		[string]$CultureID = $PSUICulture,
+		[Parameter(Mandatory=$False)]
+		[string]$ResourceFolderPath = (Get-Location),
+		[Parameter(Mandatory=$False)]
+		[ValidateScript({
+			If(![string]::IsNullOrEmpty($_)) {
+				$_ -like "*.psd1"
+			}
+			Else { $true }
+		})]
+		[String]$ResourceFile = "Resources.psd1"
+	)
+
+	# Check that the input Culture ID is valid
+	If($null -eq [System.Globalization.CultureInfo]::GetCultures([System.Globalization.CultureTypes]::AllCultures) | Where-Object { $_.Name -like "*$CultureID*" })
+	{
+		Throw "Invalid Culture ID '$CultureID'"
+	}
+	
+	# Check that the requested culture exists in the resource folder
+	If(-not (Test-Path -Path (Join-Path -Path $ResourceFolderPath -ChildPath $CultureID)))
+	{
+		Throw "There is no Culture folder '$CultureID' in '$ResourceFolderPath'"
+	}
+
+	# Save the details in relevant script properties
+	Set-Variable -Scope Script -Name m_CultureID -Value $CultureID
+	Set-Variable -Scope Script -Name m_ResourceFile -Value $ResourceFile
+	Set-Variable -Scope Script -Name m_ResourceFolder -Value $ResourceFolderPath
+}
+Export-ModuleMember -Function Set-ResourceCulture
+
+Function Get-LocalizedMessage
+{
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+		[String]$ID
+	)
+
+	if($null -eq $m_Script_Resources)
+	{
+		Import-ScriptResources
+	}
+	$resourceString = $null
+
+    if ($null -ne $m_Script_Resources[$ID])
+    {
+        $resourceString = $m_Script_Resources[$ID]
+    }
+    else
+    {
+        Throw "There is no resource ID '$ID' in the selected localization '$(Get-ResourceCulture)'"
+    }
+
+	return $resourceString
+}
+
+Function Import-ScriptResources
+{
+	Import-LocalizedData -BindingVariable m_Script_Resources -filename $m_ResourceFile -UICulture $(Get-ResourceCulture) -BaseDirectory $m_ResourceFolder
+}
+#endregion
