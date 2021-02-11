@@ -396,7 +396,7 @@ Function Get-LocalizedMessage
 		}
 		$resourceString = $null
 	
-		if ($null -ne $m_Script_Resources[$ID])
+		if ($null -ne $m_Script_Resources -and $null -ne $m_Script_Resources[$ID])
 		{
 			$resourceString = $m_Script_Resources[$ID]
 		}
@@ -430,7 +430,11 @@ Function Import-ScriptResources
 	try{
 		If($null -ne $m_ResourceFile -and $null -ne $m_ResourceFolder)
 		{
-			Import-LocalizedData -BindingVariable _Script_Resources -filename $m_ResourceFile -UICulture $(Get-ResourceCulture) -BaseDirectory $m_ResourceFolder
+			Import-LocalizedData -BindingVariable _Script_Resources -filename $m_ResourceFile -UICulture $(Get-ResourceCulture) -BaseDirectory $m_ResourceFolder -ErrorAction SilentlyContinue
+			If($null -eq $_Script_Resources)
+			{
+				Throw $Error[0].Exception.Message
+			}
 		}
 		else {
 			Throw "Run the Set-ResourceCulture function first"
