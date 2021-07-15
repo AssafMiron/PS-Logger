@@ -219,7 +219,7 @@ Function Write-LocalizedMessage
 	The type of the message to log (Info, Warning, Error, Debug)
 .EXAMPLE
 	Write-LocalizedMessage -Type Info -MsgID "Hello_World!"
-	>When in English locatization:
+	>When in English localization:
 	Hello World!
 	>When in Spanish localization:
 	Hola Mundo!
@@ -246,7 +246,7 @@ param(
 		Write-LogMessage -Type $Type -Header:$Header -SubHeader:$SubHeader -Footer:$Footer -LogFile $LogFile -Msg $(Get-LocalizedMessage -id $MSGID)
 	}
 	catch {
-		Throw $(New-Object System.Exception ("Cannot write locallized message"),$_.Exception)
+		Throw $(New-Object System.Exception ("Cannot write localized message"),$_.Exception)
 	}
 }
 Export-ModuleMember -Function Write-LocalizedMessage
@@ -320,9 +320,9 @@ Function Set-ResourceCulture
 {
 <# 
 .SYNOPSIS 
-	Sets the culture ID for the locallized messages
+	Sets the culture ID for the localized messages
 .DESCRIPTION
-	Sets the culture ID for the locallized messages
+	Sets the culture ID for the localized messages
 .PARAMETER CultureID
 	The Culture ID to use. Can be set as a high level language (for example: en) or using a specific culture (for example: en-US)	
 .PARAMETER ResourceFolderPath
@@ -421,7 +421,7 @@ Function Import-ScriptResources
 {
 <# 
 .SYNOPSIS 
-	Imports the relevant locallized resource file
+	Imports the relevant localized resource file
 .DESCRIPTION
 	Imports the resource file of the selected resource culture from the base resource folder
 	Using the parameters entered in Set-ResourceCulture, running Set-ResourceCulture is a prerequisite for running this function
