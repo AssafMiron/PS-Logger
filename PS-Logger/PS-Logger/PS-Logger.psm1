@@ -142,18 +142,22 @@ Function Write-LogMessage
 		if ([string]::IsNullOrEmpty($Msg)) { $Msg = "N/A" }
 		
 		# Mask Passwords
-		$maskingPattern = '((?:["]{0,1}(password|secret|NewCredentials|credentials)(?!s))[=,:]{0,1}\s{0,}["]{0,})(?=([\w`~!@#$%^&*()-_\=\+\\\/|;:\.,\[\]{}]+))'
-		$maskingResult = $Msg | Select-String $maskingPattern -AllMatches
-		if ($maskingResult.Matches.Count -gt 0)
-		{
-			foreach ($item in $maskingResult.Matches)
-   			{
-				if ($item.Success)
-				{
-					$Msg = $Msg.Replace($item.Groups[3].Value, "****")
-				}
-			}
-		}
+        $maskingPattern = '(?:(?:["\s\/\\](password|secret|NewCredentials|credentials|answer)(?!s))\s{0,}["\:= ]{1,}\s{0,}["]{0,})(?=([\w`~!@#$%^&*()\-_\=\+\\\/\|\,\;\:\.\[\]\{\}]+))'
+        $maskingResult = $Msg | Select-String $maskingPattern -AllMatches
+        if ($maskingResult.Matches.Count -gt 0)
+        {
+            foreach ($item in $maskingResult.Matches)
+            {
+                if ($item.Success)
+                {
+                    # Avoid replacing a single comma, space or semi-colon 
+                    if($item.Groups[2].Value -NotMatch '^(,| |;)$')
+                    {
+                        $Msg = $Msg.Replace($item.Groups[2].Value, "****")
+                    }
+                }
+            }
+        }
 		# Check the message type
 		switch ($type)
 		{
